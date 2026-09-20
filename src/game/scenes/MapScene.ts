@@ -1,9 +1,13 @@
+import Phaser from "phaser";
 import { learningPath, missions } from "../content";
 import { getProgress, setCurrentScene, updateProgress } from "../progress";
 import { announce, isReducedMotion } from "../settings";
 import { BaseScene, palette } from "../ui";
 
 export class MapScene extends BaseScene {
+  private dino?: Phaser.GameObjects.Image;
+  private transitioning = false;
+
   constructor() {
     super("MapScene");
   }
@@ -14,14 +18,16 @@ export class MapScene extends BaseScene {
     const progress = getProgress();
     this.title("Explora la isla", "Todas las aventuras están abiertas. Elige por dónde continuar.");
     const portrait = this.sceneHeight > this.sceneWidth;
-    if (!portrait) {
-      const dino = this.fitImage(
-        this.add.image(this.sceneWidth * 0.11, this.sceneHeight * 0.79, "minti"),
-        220,
-        300,
-      );
-      this.idle(dino, 5);
-    }
+    this.dino = this.fitImage(
+      this.add.image(
+        portrait ? this.sceneWidth * 0.12 : this.sceneWidth * 0.11,
+        portrait ? this.sceneHeight * 0.88 : this.sceneHeight * 0.79,
+        "minti-walk",
+      ),
+      portrait ? 96 : 220,
+      portrait ? 130 : 300,
+    ).setDepth(4);
+    this.idle(this.dino, portrait ? 3 : 4);
 
     const nodes = portrait
       ? [
@@ -83,11 +89,34 @@ export class MapScene extends BaseScene {
       .setOrigin(0.5)
       .setDepth(7);
     const button = this.button(x, y + (compact ? 64 : 82), completed ? `✓ ${label}` : label, () => {
-      updateProgress({ selectedMissionId: missionId });
-      setCurrentScene("ReadingScene");
-      this.scene.start("ReadingScene");
+      this.enterMission(missionId, x, y);
     }, { width: compact ? Math.min(170, this.sceneWidth * 0.44) : Math.min(250, this.sceneWidth * 0.48), color, fontSize: compact ? 13 : 19, depth: 8 });
     marker.setInteractive({ useHandCursor: true }).on("pointerup", () => button.emit("pointerup"));
     symbol.setInteractive({ useHandCursor: true }).on("pointerup", () => button.emit("pointerup"));
+  }
+
+  private enterMission(missionId: string, targetX: number, targetY: number): void {
+    if (this.transitioning) return;
+    this.transitioning = true;
+    updateProgress({ selectedMissionId: missionId });
+    setCurrentScene("ReadingScene");
+    const openMission = (): void => {
+      this.scene.start("ReadingScene");
+    };
+    if (!this.dino || isReducedMotion()) {
+      openMission();
+      return;
+    }
+    this.tweens.killTweensOf(this.dino);
+    this.dino.setAngle(0);
+    this.tweens.add({
+      targets: this.dino,
+      x: this.dino.x + (targetX - this.dino.x) * 0.48,
+      y: this.dino.y + (targetY - this.dino.y) * 0.32,
+      angle: -3,
+      duration: 560,
+      ease: "Sine.InOut",
+      onComplete: openMission,
+    });
   }
 }

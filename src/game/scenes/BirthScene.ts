@@ -259,6 +259,7 @@ export class BirthScene extends BaseScene {
     this.instruction?.destroy();
     this.instruction = this.title("¡Hola! Soy Minti", "Tu compañera para explorar sonidos, letras y cuentos.");
     if (!isReducedMotion()) this.idle(dino, 4);
+    this.blink(dino);
     if (speakGreeting) {
       playChirp();
       this.say("¡Hola! Soy Minti. ¿Exploramos la isla juntas?");

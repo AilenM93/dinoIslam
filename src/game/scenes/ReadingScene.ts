@@ -10,6 +10,9 @@ export class ReadingScene extends BaseScene {
   private optionButtons: Phaser.GameObjects.Container[] = [];
   private feedback?: Phaser.GameObjects.Text;
   private mission: ReadingMission = firstMission;
+  private dino?: Phaser.GameObjects.Image;
+  private dinoMaxWidth = 0;
+  private dinoMaxHeight = 0;
 
   constructor() {
     super("ReadingScene");
@@ -30,13 +33,14 @@ export class ReadingScene extends BaseScene {
     const panelY = portrait ? this.sceneHeight - panelHeight - 14 : this.sceneHeight - panelHeight - 24;
     this.panel(panelX, panelY, panelWidth, panelHeight);
 
-    const dino = this.fitImage(
-      this.add.image(portrait ? 58 : panelX * 0.46, portrait ? 214 : this.sceneHeight * 0.61, "minti"),
-      portrait ? 108 : Math.min(320, this.sceneWidth * 0.27),
-      portrait ? 150 : this.sceneHeight * 0.62,
-    );
-    dino.setDepth(4);
-    this.idle(dino, 5);
+    this.dinoMaxWidth = portrait ? 108 : Math.min(320, this.sceneWidth * 0.27);
+    this.dinoMaxHeight = portrait ? 150 : this.sceneHeight * 0.62;
+    this.dino = this.fitImage(
+      this.add.image(portrait ? 58 : panelX * 0.46, portrait ? 214 : this.sceneHeight * 0.61, "minti-listen"),
+      this.dinoMaxWidth,
+      this.dinoMaxHeight,
+    ).setDepth(4);
+    this.idle(this.dino, 4);
 
     const centerX = panelX + panelWidth / 2;
     const promptY = panelY + 54;
@@ -130,6 +134,7 @@ export class ReadingScene extends BaseScene {
     this.say(`${this.mission.success} Ganaste la ${this.mission.reward.name.toLowerCase()}.`);
     announce(`Respuesta correcta. Ganaste la ${this.mission.reward.name.toLowerCase()}.`);
     if (this.feedback) this.feedback.setText(this.mission.success).setColor("#23735e");
+    this.celebrateMinti();
     this.confetti(button.x, button.y);
     this.time.delayedCall(500, () => {
       this.toast(`${this.mission.reward.symbol} ¡Ganaste la ${this.mission.reward.name.toLowerCase()}!`, this.mission.reward.color);
@@ -138,6 +143,33 @@ export class ReadingScene extends BaseScene {
         this.scene.start("RefugeScene");
       }, { width: Math.min(330, this.sceneWidth - 36), color: palette.coral, depth: 90 });
     });
+  }
+
+  private celebrateMinti(): void {
+    if (!this.dino) return;
+    this.tweens.killTweensOf(this.dino);
+    const dino = this.dino;
+    const revealPose = (): void => {
+      dino.setTexture("minti-celebrate");
+      this.fitImage(dino, this.dinoMaxWidth, this.dinoMaxHeight);
+      dino.setAlpha(1).setAngle(0);
+      if (isReducedMotion()) return;
+      const baseY = dino.y;
+      this.tweens.add({
+        targets: dino,
+        y: baseY - 22,
+        angle: -4,
+        duration: 190,
+        ease: "Quad.Out",
+        yoyo: true,
+        repeat: 1,
+      });
+    };
+    if (isReducedMotion()) {
+      revealPose();
+      return;
+    }
+    this.tweens.add({ targets: dino, alpha: 0.2, duration: 90, onComplete: revealPose });
   }
 
   private showCompletedState(centerX: number, panelY: number, panelWidth: number, panelHeight: number): void {

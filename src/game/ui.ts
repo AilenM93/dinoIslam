@@ -139,6 +139,8 @@ export class BaseScene extends Phaser.Scene {
 
   protected idle(target: Phaser.GameObjects.Image, distance = 8): void {
     if (isReducedMotion()) return;
+    const baseScaleX = target.scaleX;
+    const baseScaleY = target.scaleY;
     this.tweens.add({
       targets: target,
       y: `-=${distance}`,
@@ -147,6 +149,47 @@ export class BaseScene extends Phaser.Scene {
       ease: "Sine.InOut",
       yoyo: true,
       repeat: -1,
+    });
+    this.tweens.add({
+      targets: target,
+      scaleX: baseScaleX * 1.018,
+      scaleY: baseScaleY * 0.986,
+      duration: 1050,
+      ease: "Sine.InOut",
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  protected breathe(target: Phaser.GameObjects.Image): void {
+    if (isReducedMotion()) return;
+    const baseScaleX = target.scaleX;
+    const baseScaleY = target.scaleY;
+    this.tweens.add({
+      targets: target,
+      scaleX: baseScaleX * 1.012,
+      scaleY: baseScaleY * 0.988,
+      duration: 1250,
+      ease: "Sine.InOut",
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  protected blink(target: Phaser.GameObjects.Image, openTexture = "minti", closedTexture = "minti-blink"): void {
+    if (isReducedMotion()) return;
+    this.time.addEvent({
+      delay: 3200,
+      loop: true,
+      callback: () => {
+        if (!target.active || !target.visible) return;
+        const width = target.displayWidth;
+        const height = target.displayHeight;
+        target.setTexture(closedTexture).setDisplaySize(width, height);
+        this.time.delayedCall(130, () => {
+          if (target.active) target.setTexture(openTexture).setDisplaySize(width, height);
+        });
+      },
     });
   }
 

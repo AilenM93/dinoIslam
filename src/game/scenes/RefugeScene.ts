@@ -20,11 +20,11 @@ export class RefugeScene extends BaseScene {
     const portrait = this.sceneHeight > this.sceneWidth;
 
     const dino = this.fitImage(
-      this.add.image(portrait ? this.sceneWidth * 0.76 : this.sceneWidth * 0.82, portrait ? this.sceneHeight * 0.4 : this.sceneHeight * 0.48, "minti"),
-      portrait ? this.sceneWidth * 0.44 : this.sceneWidth * 0.23,
-      portrait ? this.sceneHeight * 0.29 : this.sceneHeight * 0.52,
+      this.add.image(portrait ? this.sceneWidth * 0.72 : this.sceneWidth * 0.8, portrait ? this.sceneHeight * 0.43 : this.sceneHeight * 0.54, "minti-rest"),
+      portrait ? this.sceneWidth * 0.58 : this.sceneWidth * 0.34,
+      portrait ? this.sceneHeight * 0.23 : this.sceneHeight * 0.3,
     );
-    this.idle(dino, 4);
+    this.breathe(dino);
 
     const status = this.add
       .text(this.sceneWidth / 2, portrait ? this.sceneHeight * 0.56 : this.sceneHeight * 0.65, completedCount > 0 ? "Toca una piedra para recordar su aventura." : "Completa una aventura y su piedra aparecerá aquí.", {
