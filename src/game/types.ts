@@ -1,19 +1,22 @@
 export type GameSceneKey = "BirthScene" | "MapScene" | "ReadingScene" | "RefugeScene";
 
 export interface GameProgress {
-  version: 1;
+  version: 2;
   currentScene: GameSceneKey;
   eggChoice: number | null;
   hatched: boolean;
-  lessonCompleted: boolean;
-  decorations: number;
+  selectedMissionId: string;
+  completedMissionIds: string[];
+  decorations: string[];
   attempts: number;
 }
 
 export interface ReadingMission {
   id: string;
+  stageId: string;
   area: string;
   title: string;
+  icon: string;
   targetWord: string;
   prompt: string;
   spokenPrompt: string;
@@ -22,4 +25,11 @@ export interface ReadingMission {
   hint: string;
   success: string;
   retry: string;
+  reward: {
+    id: string;
+    name: string;
+    symbol: string;
+    color: number;
+    accent: number;
+  };
 }

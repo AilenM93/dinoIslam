@@ -1,6 +1,6 @@
 # Dino Island
 
-Primera base jugable de una aventura de lectura en español para niñas y niños de 4 a 6 años. El recorrido actual permite elegir un huevo, conocer a Minti, explorar el mapa, resolver una actividad real y guardar una recompensa en el refugio.
+Primera base jugable de una aventura de lectura en español para niñas y niños de 4 a 6 años. El recorrido permite elegir un huevo, conocer a Minti, explorar cinco aventuras de lectura y decorar el refugio con las piedras obtenidas.
 
 ## Ejecutar
 
@@ -34,11 +34,11 @@ El identificador del proyecto seleccionado por `firebase use --add` se guarda en
 ## Recorrido incluido
 
 1. **Nacimiento:** una entrada narrativa recorre la isla, conduce al nido y permite abrir uno de tres huevos distintos para conocer a Minti.
-2. **Mapa:** la isla muestra la progresión futura, permite repetir el nacimiento sin borrar el avance y abre el Bosque de letras.
-3. **Actividad:** escucha la palabra `SOL`, elige su letra inicial, puede equivocarse, repetir la ayuda y recibir una pista con menos opciones.
-4. **Refugio:** guarda una Piedra del sol y puede repetir la misión o volver al mapa.
+2. **Mapa:** las cinco zonas están activas, muestran sus misiones y marcan con un visto las aventuras completadas.
+3. **Actividades:** Nido de sonidos, Bosque de letras, Puente de sílabas, Laguna de palabras y Cueva de cuentos ofrecen una misión breve con ayuda hablada, repetición y pistas tras varios intentos.
+4. **Refugio:** cada misión entrega una piedra distinta. Las piedras aparecen integradas sobre el camino del refugio y se pueden tocar para recordar qué logro representan.
 
-El progreso se guarda en `localStorage` del navegador. No existen cuentas, pagos, publicidad, rachas, clasificación ni contrarreloj.
+El progreso se guarda en `localStorage` del navegador. La versión actual migra automáticamente el avance anterior y conserva la Piedra del sol ya conseguida. No existen cuentas, pagos, publicidad, rachas, clasificación ni contrarreloj.
 
 ## Tecnología y estructura
 
@@ -56,18 +56,18 @@ Capturas del inicio: [escritorio](docs/screenshots/intro-start-desktop.png) y [f
 
 La matriz de comprobaciones está en [docs/QA.md](docs/QA.md).
 
-## Progresión prevista
+## Progresión activa
 
-La estructura del mapa conserva cinco etapas: Nido de sonidos (discriminación del habla), Bosque de letras (letra-sonido), Puente de sílabas, Laguna de palabras y Cueva de cuentos (frases e historias). Solo se implementa una misión corta del Bosque de letras.
+La estructura del mapa incluye cinco etapas jugables: Nido de sonidos (discriminación del habla), Bosque de letras (letra-sonido), Puente de sílabas, Laguna de palabras y Cueva de cuentos (frases e historias). Cada etapa contiene una primera misión corta y una piedra de logro propia.
 
 La primera interacción orienta la ayuda y no funciona como diagnóstico. Una futura adaptación debe observar varias respuestas, reutilizar habilidades en distintos contextos y ofrecer repetición, ejemplos o menos opciones; no debe medir dominio por velocidad.
 
 ## Alcance y límites
 
-- El currículo completo, la grabación de audio, la animación de personaje por fotogramas y la validación con niños están pendientes.
+- Más misiones por etapa, la grabación de audio, la animación de personaje por fotogramas y la validación con niños están pendientes.
 - Las imágenes finales son renders únicos; las microanimaciones actuales son desplazamientos y transiciones realizados por el motor, no animación corporal completa.
-- El rediseño pedagógico y visual del mapa queda como una fase posterior; esta revisión se concentra en el inicio narrativo.
-- La recompensa decorativa es vectorial y simple, pensada como demostración del sistema.
+- Las cinco primeras misiones requieren una revisión pedagógica con especialistas y pruebas con familias antes de considerarse contenido final.
+- Las recompensas decorativas son vectoriales y ampliables; ya forman una colección persistente dentro del escenario del refugio.
 - Este prototipo no afirma eficacia pedagógica demostrada.
 
 Consulta [docs/ASSETS.md](docs/ASSETS.md) para el inventario visual y la procedencia de los recursos.

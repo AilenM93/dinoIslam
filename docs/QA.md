@@ -1,4 +1,4 @@
-# Verificación de la introducción
+# Verificación del recorrido
 
 ## Matriz manual
 
@@ -8,6 +8,15 @@
 | Móvil vertical | 390 × 844 | Tres huevos visibles sin recorte, alineación con los huecos, título, controles y botón final |
 | Captura de escritorio | 1440 × 900 | Pantalla inicial, escala del fondo, título, controles y botón Comenzar |
 | Captura vertical | 500 × 932 | Pantalla inicial, recorte del fondo, título, controles y botón Comenzar |
+
+## Aventuras y logros
+
+- Las cinco zonas del mapa se presentan como botones activos y accesibles mediante su marcador o su etiqueta.
+- Cada zona abre su propio enunciado, opciones, ayuda hablada, pista y recompensa.
+- Una respuesta correcta marca la zona como completada y añade una piedra única a la colección.
+- El refugio coloca las piedras obtenidas sobre el camino del escenario; los espacios sin completar solo muestran musgo.
+- Al tocar una piedra se anuncia su nombre y la zona de procedencia.
+- El guardado versión 2 migra el progreso versión 1 y conserva la Piedra del sol cuando ya estaba obtenida.
 
 ## Alineación del nido
 
@@ -20,7 +29,7 @@ Se comprobó la eclosión en el mismo punto de apoyo: el huevo elegido se sustit
 - Repetición del nacimiento desde el mapa sin borrar el progreso.
 - Restauración del huevo elegido después de recargar.
 - Variante con movimiento reducido.
-- Continuidad hacia el mapa, la actividad `SOL` y el refugio.
+- Continuidad hacia el mapa, las cinco actividades y el refugio.
 - Compilación de producción y consola del navegador sin errores.
 
 ## Capturas
