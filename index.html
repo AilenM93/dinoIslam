@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#173f38" />
+    <meta name="description" content="Dino Island: una primera aventura de lectura para jugar en familia." />
+    <title>Dino Island</title>
+  </head>
+  <body>
+    <main id="app" aria-label="Dino Island">
+      <div id="game-container" aria-label="Zona de juego"></div>
+      <nav id="accessibility-controls" aria-label="Ajustes del juego">
+        <button id="sound-toggle" type="button" aria-pressed="true">🔊 Sonido</button>
+        <button id="motion-toggle" type="button" aria-pressed="false">🌿 Movimiento</button>
+      </nav>
+      <div id="screen-reader-status" class="sr-only" aria-live="polite"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
