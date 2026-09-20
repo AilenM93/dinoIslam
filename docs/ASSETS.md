@@ -28,17 +28,17 @@ Las letras, palabras, botones, marcadores y la Piedra del sol se dibujan en tiem
 
 | Archivo | Uso previsto | Estado |
 | --- | --- | --- |
-| `design/assets-v2/island-adventure-map-v2.png` | Mapa panorámico con Nido, Bosque, Puente, Laguna y Cueva integrados físicamente | Candidato aprobado para revisión |
-| `design/assets-v2/island-adventure-map-mobile-v2.png` | Composición vertical del mismo recorrido para teléfonos | Candidato aprobado para revisión |
+| `public/assets/island-adventure-map-v2.png` | Mapa panorámico con Nido, Bosque, Puente, Laguna y Cueva integrados físicamente | Integrado en el mapa de escritorio |
+| `public/assets/island-adventure-map-mobile-v2.png` | Composición vertical del mismo recorrido para teléfonos | Integrado en el mapa móvil |
 | `design/assets-v2/ui-wood-sign-v2.png` | Superficie orgánica para nombres y mensajes breves | Candidato, fondo transparente |
 | `design/assets-v2/ui-leaf-button-v2.png` | Botón principal con acabado vegetal y soporte de madera | Candidato, fondo transparente |
-| `design/assets-v2/ui-stone-control-v2.png` | Base circular para sonido, movimiento, inicio y accesibilidad | Candidato, fondo transparente |
-| `design/assets-v2/map-zone-locked-vines-v2.png` | Vegetación y niebla para representar una zona todavía dormida | Candidato, fondo transparente |
-| `design/assets-v2/character-nest-listener-v2.png` | Compañero del Nido de sonidos, especializado en escucha | Candidato, fondo transparente |
-| `design/assets-v2/character-forest-guide-v2.png` | Compañera del Bosque de letras, observadora de formas | Candidato, fondo transparente |
-| `design/assets-v2/character-bridge-builder-v2.png` | Compañero del Puente de sílabas, constructor paciente | Candidato, fondo transparente |
-| `design/assets-v2/character-lagoon-guide-v2.png` | Compañera de la Laguna de palabras, guía de significados | Candidato, fondo transparente |
-| `design/assets-v2/character-cave-storyteller-v2.png` | Compañero de la Cueva de cuentos, narrador con luz de cristal | Candidato, fondo transparente |
+| `public/assets/ui-stone-control-v2.png` | Base circular para sonido, movimiento, inicio y accesibilidad | Integrado en el acceso al nacimiento |
+| `public/assets/map-zone-locked-vines-v2.png` | Vegetación y niebla para representar una zona todavía dormida | Integrado en zonas bloqueadas |
+| `public/assets/character-nest-listener-v2.png` | Compañero del Nido de sonidos, especializado en escucha | Aparece al completar la zona |
+| `public/assets/character-forest-guide-v2.png` | Compañera del Bosque de letras, observadora de formas | Aparece al completar la zona |
+| `public/assets/character-bridge-builder-v2.png` | Compañero del Puente de sílabas, constructor paciente | Aparece al completar la zona |
+| `public/assets/character-lagoon-guide-v2.png` | Compañera de la Laguna de palabras, guía de significados | Aparece al completar la zona |
+| `public/assets/character-cave-storyteller-v2.png` | Compañero de la Cueva de cuentos, narrador con luz de cristal | Aparece al completar la zona |
 | `design/assets-v2/refuge-lagoon-v2.png` | Concepto inicial del segundo refugio con colección de muestra | Referencia de composición |
 | `design/assets-v2/refuge-lagoon-empty-v2.png` | Segundo refugio desbloqueable con estantes vacíos para logros reales | Candidato preferido para revisión |
 | `design/assets-v2/reward-stone-echo-v2.png` | Piedra del Nido de sonidos con ondas talladas | Candidato, fondo transparente |
@@ -51,9 +51,9 @@ Las letras, palabras, botones, marcadores y la Piedra del sol se dibujan en tiem
 | `public/assets/minti-celebrate-v2.png` | Pose de celebración de Minti | Integrado en las respuestas correctas |
 | `public/assets/minti-rest-v2.png` | Pose horizontal de descanso para los refugios | Integrado en el refugio |
 | `public/assets/minti-blink-v2.png` | Fotograma de parpadeo para la presentación de Minti | Integrado en el piloto de animación |
-| `design/assets-v2/map-zone-awaken-v2.png` | Floración y luciérnagas para la animación de desbloqueo | Candidato, fondo transparente |
+| `public/assets/map-zone-awaken-v2.png` | Floración y luciérnagas para la animación de desbloqueo | Integrado en zonas disponibles y completadas |
 
-Estos archivos no sustituyen todavía los recursos activos. Se conservan con el sufijo `v2` hasta aprobar composición, legibilidad, estados de desbloqueo y adaptación táctil.
+Los recursos marcados como integrados ya forman parte de la experiencia. Los candidatos restantes se conservan en `design/assets-v2` hasta aprobar su composición y función definitiva.
 
 ## Pendientes
 
