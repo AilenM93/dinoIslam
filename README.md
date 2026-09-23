@@ -1,6 +1,6 @@
 # Dino Island
 
-Primera base jugable de una aventura de lectura en español para niñas y niños de 4 a 6 años. El recorrido permite elegir un huevo, conocer a Minti, explorar cinco aventuras de lectura y decorar el refugio con las piedras obtenidas.
+Primera base jugable de una aventura de lectura en español para niñas y niños de 4 a 6 años. El recorrido permite elegir un huevo, conocer a Minti, explorar actividades recurrentes y despertar una colección de Runas de la Isla que transforma el refugio.
 
 ## Ejecutar
 
@@ -34,11 +34,12 @@ El identificador del proyecto seleccionado por `firebase use --add` se guarda en
 ## Recorrido incluido
 
 1. **Nacimiento:** una entrada narrativa recorre la isla, conduce al nido y permite abrir uno de tres huevos distintos para conocer a Minti.
-2. **Mapa:** las cinco zonas están activas, muestran sus misiones y marcan con un visto las aventuras completadas.
-3. **Actividades:** Nido de sonidos, Bosque de letras, Puente de sílabas, Laguna de palabras y Cueva de cuentos ofrecen una misión breve con ayuda hablada, repetición y pistas tras varios intentos.
-4. **Refugio:** cada misión entrega una piedra distinta. Las piedras aparecen integradas sobre el camino del refugio y se pueden tocar para recordar qué logro representan.
+2. **Mapa:** las zonas despiertan en orden. Cada territorio permanece disponible para volver a practicar y muestra un compañero al alcanzar su dominio inicial.
+3. **Actividades:** las cinco zonas contienen cuatro actividades iniciales. El selector evita la repetición inmediata, equilibra lo menos visto y combina elección, construcción de secuencias y emparejamiento.
+   Cada zona abre su propio escenario a ras del suelo (nido, bosque, puente, laguna o cueva), con Minti y el dinosaurio compañero de esa zona. El botón Mapa permite salir durante la actividad. Al acertar, las tarjetas dan paso a la recompensa dentro del entorno.
+4. **Refugio:** cada zona entrega hasta tres fragmentos de una runa. Las cinco runas usan ilustraciones propias, tienen estados visuales y se pueden tocar para conocer su progreso.
 
-El progreso se guarda en `localStorage` del navegador. La versión actual migra automáticamente el avance anterior y conserva la Piedra del sol ya conseguida. No existen cuentas, pagos, publicidad, rachas, clasificación ni contrarreloj.
+El progreso se guarda en `localStorage` del navegador. La versión 3 migra automáticamente los guardados anteriores, conserva las zonas completadas y transforma sus piedras en runas radiantes. No existen cuentas, pagos, publicidad, rachas, clasificación ni contrarreloj.
 
 ## Tecnología y estructura
 
@@ -58,16 +59,18 @@ La matriz de comprobaciones está en [docs/QA.md](docs/QA.md).
 
 ## Progresión activa
 
-La estructura del mapa incluye cinco etapas jugables: Nido de sonidos (discriminación del habla), Bosque de letras (letra-sonido), Puente de sílabas, Laguna de palabras y Cueva de cuentos (frases e historias). Cada etapa contiene una primera misión corta y una piedra de logro propia.
+La estructura del mapa incluye cinco etapas jugables: Nido de sonidos (discriminación del habla), Bosque de letras (letra-sonido), Puente de sílabas, Laguna de palabras y Cueva de cuentos (frases e historias). Cada etapa contiene cuatro actividades iniciales y una runa propia.
+
+Una zona alcanza su primer dominio después de tres encuentros correctos con al menos dos familias y tres contenidos distintos. Cada contenido nuevo añade un fragmento; con tres fragmentos la runa se vuelve radiante y despierta el siguiente territorio.
 
 La primera interacción orienta la ayuda y no funciona como diagnóstico. Una futura adaptación debe observar varias respuestas, reutilizar habilidades en distintos contextos y ofrecer repetición, ejemplos o menos opciones; no debe medir dominio por velocidad.
 
 ## Alcance y límites
 
-- Más misiones por etapa, la grabación de audio, la animación de personaje por fotogramas y la validación con niños están pendientes.
+- La ampliación desde 20 actividades iniciales hasta las 60 combinaciones planificadas, la grabación de audio, la animación por fotogramas y la validación con niños están pendientes.
 - Las imágenes finales son renders únicos; las microanimaciones actuales son desplazamientos y transiciones realizados por el motor, no animación corporal completa.
-- Las cinco primeras misiones requieren una revisión pedagógica con especialistas y pruebas con familias antes de considerarse contenido final.
-- Las recompensas decorativas son vectoriales y ampliables; ya forman una colección persistente dentro del escenario del refugio.
+- Las actividades requieren revisión pedagógica con especialistas y pruebas con familias antes de considerarse contenido final.
+- Las recompensas son ilustraciones rasterizadas y forman una colección persistente dentro del escenario V2 del refugio.
 - Este prototipo no afirma eficacia pedagógica demostrada.
 
 Consulta [docs/ASSETS.md](docs/ASSETS.md) para el inventario visual y la procedencia de los recursos.

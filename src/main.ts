@@ -1,4 +1,7 @@
 import Phaser from "phaser";
+import "@fontsource/baloo-2/latin-700.css";
+import "@fontsource/nunito/latin-400.css";
+import "@fontsource/nunito/latin-700.css";
 import "./style.css";
 import { BootScene } from "./game/scenes/BootScene";
 import { BirthScene } from "./game/scenes/BirthScene";
@@ -6,8 +9,9 @@ import { MapScene } from "./game/scenes/MapScene";
 import { ReadingScene } from "./game/scenes/ReadingScene";
 import { RefugeScene } from "./game/scenes/RefugeScene";
 import { isReducedMotion, isSoundEnabled, setReducedMotion, setSoundEnabled, unlockAudio } from "./game/settings";
+import { loadGameFonts } from "./game/typography";
 
-const game = new Phaser.Game({
+const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: "game-container",
   backgroundColor: "#173f38",
@@ -19,6 +23,11 @@ const game = new Phaser.Game({
     height: "100%",
   },
   scene: [BootScene, BirthScene, MapScene, ReadingScene, RefugeScene],
+};
+
+let game: Phaser.Game | undefined;
+void loadGameFonts().then(() => {
+  game = new Phaser.Game(gameConfig);
 });
 
 const soundButton = document.querySelector<HTMLButtonElement>("#sound-toggle");
@@ -49,7 +58,7 @@ soundButton?.addEventListener("click", () => {
 motionButton?.addEventListener("click", () => {
   setReducedMotion(!isReducedMotion());
   updateControls();
-  const activeScene = game.scene.getScenes(true)[0];
+  const activeScene = game?.scene.getScenes(true)[0];
   activeScene?.tweens.killAll();
   activeScene?.scene.restart();
 });

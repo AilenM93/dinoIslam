@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { typography } from "./typography";
 import { isReducedMotion, speak, unlockAudio } from "./settings";
 
 export const palette = {
@@ -53,7 +54,7 @@ export class BaseScene extends Phaser.Scene {
     panel.lineStyle(3, palette.white, 0.7);
     panel.strokeRoundedRect(0, 0, maxWidth, panelHeight, 30);
     const title = this.add.text(28, subtitle ? 18 : 21, text, {
-      fontFamily: "Trebuchet MS, Arial Rounded MT Bold, sans-serif",
+      fontFamily: typography.display,
       fontSize: `${portrait ? 30 : 38}px`,
       fontStyle: "bold",
       color: "#173f38",
@@ -62,7 +63,7 @@ export class BaseScene extends Phaser.Scene {
     if (subtitle) {
       container.add(
         this.add.text(30, 68, subtitle, {
-          fontFamily: "Trebuchet MS, sans-serif",
+          fontFamily: typography.body,
           fontSize: `${portrait ? 17 : 20}px`,
           fontStyle: "bold",
           color: "#317565",
@@ -89,17 +90,25 @@ export class BaseScene extends Phaser.Scene {
     y: number,
     label: string,
     onPress: () => void,
-    options: { width?: number; color?: number; fontSize?: number; depth?: number } = {},
+    options: { width?: number; height?: number; color?: number; fontSize?: number; depth?: number; skin?: "leaf" | "wood" } = {},
   ): Phaser.GameObjects.Container {
     const width = options.width ?? 250;
-    const height = 70;
+    const height = options.height ?? 70;
     const container = this.add.container(x, y).setDepth(options.depth ?? 20);
     const shadow = this.add.graphics();
     shadow.fillStyle(0x102f2a, 0.25);
     shadow.fillRoundedRect(-width / 2, -height / 2 + 7, width, height, 26);
-    const background = this.add.graphics();
     const color = options.color ?? palette.coral;
+    const texture = options.skin === "wood" ? "ui-wood-sign" : "ui-leaf-button";
+    const useTexture = (Boolean(options.skin) || color === palette.mint) && this.textures.exists(texture);
+    const background = useTexture
+      ? this.add.image(0, 0, texture).setDisplaySize(width + 12, height + 14)
+      : this.add.graphics();
     const draw = (fill: number): void => {
+      if (background instanceof Phaser.GameObjects.Image) {
+        background.setTint(fill === color ? 0xffffff : 0xe8ffd7);
+        return;
+      }
       background.clear();
       background.fillStyle(fill, 1);
       background.fillRoundedRect(-width / 2, -height / 2, width, height, 26);
@@ -109,7 +118,7 @@ export class BaseScene extends Phaser.Scene {
     draw(color);
     const text = this.add
       .text(0, -2, label, {
-        fontFamily: "Trebuchet MS, Arial Rounded MT Bold, sans-serif",
+        fontFamily: typography.body,
         fontSize: `${options.fontSize ?? 26}px`,
         fontStyle: "bold",
         color: "#173f38",
@@ -208,7 +217,7 @@ export class BaseScene extends Phaser.Scene {
     bg.strokeRoundedRect(-width / 2, -38, width, 76, 28);
     const label = this.add
       .text(0, 0, text, {
-        fontFamily: "Trebuchet MS, sans-serif",
+        fontFamily: typography.body,
         fontSize: `${this.sceneWidth < 520 ? 19 : 24}px`,
         fontStyle: "bold",
         color: "#173f38",

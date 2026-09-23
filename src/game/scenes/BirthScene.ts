@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { typography } from "../typography";
 import { getProgress, setCurrentScene, updateProgress } from "../progress";
 import {
   announce,
@@ -91,7 +92,7 @@ export class BirthScene extends BaseScene {
     const focus = this.add.circle(pointX, pointY, 38, palette.sun, 0.2).setStrokeStyle(4, palette.cream, 0.82).setDepth(8);
     const question = this.add
       .text(pointX + (this.sceneHeight > this.sceneWidth ? 74 : 112), pointY - 44, "¿Escuchaste eso?", {
-        fontFamily: "Trebuchet MS",
+        fontFamily: typography.body,
         fontSize: `${this.sceneWidth < 520 ? 18 : 24}px`,
         fontStyle: "bold",
         color: "#173f38",

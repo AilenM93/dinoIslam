@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { typography } from "../typography";
 import { getProgress } from "../progress";
 import { palette } from "../ui";
 
@@ -13,7 +14,7 @@ export class BootScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#173f38");
     const title = this.add
       .text(width / 2, height / 2 - 72, "DINO ISLAND", {
-        fontFamily: "Trebuchet MS, sans-serif",
+        fontFamily: typography.display,
         fontSize: `${Math.min(54, width / 8)}px`,
         fontStyle: "bold",
         color: "#fff8dc",
@@ -28,6 +29,7 @@ export class BootScene extends Phaser.Scene {
 
     this.load.image("island", "/assets/island-background.png");
     this.load.image("refuge", "/assets/refuge-background.png");
+    this.load.image("refuge-v2", "/assets/refuge-lagoon-empty-v2.png");
     this.load.image("minti", "/assets/minti-mascot.png");
     this.load.image("minti-blink", "/assets/minti-blink-v2.png");
     this.load.image("minti-listen", "/assets/minti-listen-v2.png");
@@ -39,6 +41,13 @@ export class BootScene extends Phaser.Scene {
     this.load.image("zone-awaken", "/assets/map-zone-awaken-v2.png");
     this.load.image("zone-locked", "/assets/map-zone-locked-vines-v2.png");
     this.load.image("stone-control", "/assets/ui-stone-control-v2.png");
+    this.load.image("ui-leaf-button", "/assets/ui-leaf-button-v2.png");
+    this.load.image("ui-wood-sign", "/assets/ui-wood-sign-v2.png");
+    this.load.image("rune-echo", "/assets/reward-stone-echo-v2.png");
+    this.load.image("rune-sun", "/assets/reward-stone-sun-v2.png");
+    this.load.image("rune-bridge", "/assets/reward-stone-bridge-v2.png");
+    this.load.image("rune-lagoon", "/assets/reward-stone-lagoon-v2.png");
+    this.load.image("rune-story", "/assets/reward-stone-story-v2.png");
     this.load.image("companion-sounds", "/assets/character-nest-listener-v2.png");
     this.load.image("companion-letters", "/assets/character-forest-guide-v2.png");
     this.load.image("companion-syllables", "/assets/character-bridge-builder-v2.png");

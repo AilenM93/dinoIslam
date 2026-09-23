@@ -1,5 +1,5 @@
 :root {
-  font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+  font-family: "Nunito", "Trebuchet MS", system-ui, sans-serif;
   color: #173f38;
   background: #092f2e;
   font-synthesis: none;
@@ -51,7 +51,7 @@ canvas {
   color: #173f38;
   background: rgba(255, 250, 226, 0.94);
   box-shadow: 0 6px 16px rgba(12, 45, 39, 0.22);
-  font: 700 15px/1 "Trebuchet MS", system-ui, sans-serif;
+  font: 700 15px/1 "Nunito", "Trebuchet MS", system-ui, sans-serif;
   cursor: pointer;
   backdrop-filter: blur(8px);
 }

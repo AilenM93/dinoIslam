@@ -1,8 +1,9 @@
 import Phaser from "phaser";
-import { getMission, missions } from "../content";
-import { getProgress, resetProgress, setCurrentScene } from "../progress";
+import { typography } from "../typography";
+import { getMission, getMissionsForStage, learningPath, selectMissionForStage } from "../content";
+import { getProgress, resetProgress, setCurrentScene, updateProgress } from "../progress";
 import { announce } from "../settings";
-import type { ReadingMission } from "../types";
+import type { GameProgress } from "../types";
 import { BaseScene, palette } from "../ui";
 
 export class RefugeScene extends BaseScene {
@@ -11,28 +12,30 @@ export class RefugeScene extends BaseScene {
   }
 
   create(): void {
-    this.prepareScene("refuge", 0.04);
+    this.prepareScene("refuge-v2", 0.02);
     setCurrentScene("RefugeScene");
     const progress = getProgress();
-    const completedCount = progress.completedMissionIds.length;
+    const radiantCount = learningPath.filter((stage) => progress.runes[stage.id]?.stage === "radiant").length;
+    const fragmentCount = learningPath.reduce((total, stage) => total + (progress.runes[stage.id]?.fragments ?? 0), 0);
     const selectedMission = getMission(progress.selectedMissionId);
-    this.title("Refugio de logros", `${completedCount} de ${missions.length} piedras decoran tu hogar.`);
     const portrait = this.sceneHeight > this.sceneWidth;
 
+    this.createRuneHeader(radiantCount, fragmentCount, portrait);
+
     const dino = this.fitImage(
-      this.add.image(portrait ? this.sceneWidth * 0.72 : this.sceneWidth * 0.8, portrait ? this.sceneHeight * 0.43 : this.sceneHeight * 0.54, "minti-rest"),
-      portrait ? this.sceneWidth * 0.58 : this.sceneWidth * 0.34,
-      portrait ? this.sceneHeight * 0.23 : this.sceneHeight * 0.3,
-    );
+      this.add.image(portrait ? this.sceneWidth * 0.76 : this.sceneWidth * 0.82, portrait ? this.sceneHeight * 0.46 : this.sceneHeight * 0.53, "minti-rest"),
+      portrait ? this.sceneWidth * 0.44 : this.sceneWidth * 0.25,
+      portrait ? this.sceneHeight * 0.2 : this.sceneHeight * 0.28,
+    ).setDepth(7);
     this.breathe(dino);
 
     const status = this.add
-      .text(this.sceneWidth / 2, portrait ? this.sceneHeight * 0.56 : this.sceneHeight * 0.65, completedCount > 0 ? "Toca una piedra para recordar su aventura." : "Completa una aventura y su piedra aparecerá aquí.", {
-        fontFamily: "Trebuchet MS",
+      .text(this.sceneWidth / 2, portrait ? this.sceneHeight * 0.57 : this.sceneHeight * 0.66, fragmentCount > 0 ? "Toca una runa para conocer su historia." : "Explora el Nido de sonidos para encontrar tu primera runa.", {
+        fontFamily: typography.body,
         fontSize: `${portrait ? 17 : 21}px`,
         fontStyle: "bold",
         color: "#fff8dc",
-        backgroundColor: "rgba(19,63,56,0.78)",
+        backgroundColor: "rgba(19,63,56,0.82)",
         padding: { x: 14, y: 9 },
         align: "center",
         wordWrap: { width: this.sceneWidth - 36 },
@@ -40,92 +43,146 @@ export class RefugeScene extends BaseScene {
       .setOrigin(0.5)
       .setDepth(22);
 
-    this.drawAchievementGarden(progress.decorations, status, portrait);
+    this.drawRuneCollection(progress, status, portrait);
 
-    const buttonY = this.sceneHeight - (portrait ? 72 : 62);
-    const leftButtonX = portrait ? this.sceneWidth * 0.25 : 130;
-    const rightButtonX = portrait ? this.sceneWidth * 0.75 : 350;
+    const buttonY = this.sceneHeight - (portrait ? 66 : 58);
+    const leftButtonX = portrait ? this.sceneWidth * 0.25 : 135;
+    const rightButtonX = portrait ? this.sceneWidth * 0.75 : 385;
     this.button(leftButtonX, buttonY, "Mapa", () => {
       setCurrentScene("MapScene");
       this.scene.start("MapScene");
     }, { width: portrait ? 150 : 190, color: palette.mint, fontSize: portrait ? 20 : 22 });
-    this.button(rightButtonX, buttonY, "Repetir", () => {
+    this.button(rightButtonX, buttonY, "Otra aventura", () => {
+      const current = getProgress();
+      const nextMission = selectMissionForStage(selectedMission.stageId, current.attemptHistory);
+      updateProgress({ selectedMissionId: nextMission.id });
       setCurrentScene("ReadingScene");
       this.scene.start("ReadingScene");
-    }, { width: portrait ? 150 : 190, color: palette.sun, fontSize: portrait ? 20 : 22 });
+    }, { width: portrait ? 178 : 220, color: palette.sun, fontSize: portrait ? 17 : 20 });
 
+    this.createProtectedReset(portrait);
+
+    const message = fragmentCount > 0
+      ? `Tu colección tiene ${fragmentCount} fragmentos. Sigue explorando para volver radiantes las cinco runas.`
+      : "El refugio está listo para guardar las runas de tus aventuras.";
+    this.time.delayedCall(350, () => this.say(message));
+    announce(message);
+  }
+
+  private createRuneHeader(radiantCount: number, fragmentCount: number, portrait: boolean): void {
+    const sign = this.fitImage(
+      this.add.image(this.sceneWidth / 2, portrait ? 90 : 82, "ui-wood-sign"),
+      Math.min(this.sceneWidth - 24, portrait ? 370 : 600),
+      portrait ? 130 : 150,
+    ).setDepth(15);
+    this.add
+      .text(sign.x, sign.y - (portrait ? 13 : 17), "RUNAS DE LA ISLA", {
+        fontFamily: typography.display,
+        fontSize: `${portrait ? 25 : 34}px`,
+        fontStyle: "bold",
+        color: "#173f38",
+      })
+      .setOrigin(0.5)
+      .setDepth(16);
+    this.add
+      .text(sign.x, sign.y + (portrait ? 22 : 25), `${radiantCount} radiantes · ${fragmentCount} fragmentos`, {
+        fontFamily: typography.body,
+        fontSize: `${portrait ? 14 : 18}px`,
+        fontStyle: "bold",
+        color: "#315f45",
+      })
+      .setOrigin(0.5)
+      .setDepth(16);
+  }
+
+  private drawRuneCollection(progress: GameProgress, status: Phaser.GameObjects.Text, portrait: boolean): void {
+    const startX = portrait ? 42 : this.sceneWidth * 0.2;
+    const endX = portrait ? this.sceneWidth - 42 : this.sceneWidth * 0.71;
+    const gap = (endX - startX) / (learningPath.length - 1);
+    const baseY = portrait ? this.sceneHeight * 0.72 : this.sceneHeight * 0.8;
+
+    learningPath.forEach((stage, index) => {
+      const mission = getMissionsForStage(stage.id)[0];
+      if (!mission) return;
+      const rune = progress.runes[stage.id];
+      const x = startX + gap * index;
+      const y = baseY + (index % 2 === 0 ? 0 : portrait ? 12 : 18);
+      const width = portrait ? 64 : 105;
+      const height = portrait ? 58 : 92;
+      const pedestal = this.add.ellipse(x, y + height * 0.36, width * 0.92, height * 0.3, 0x315f45, 0.72).setDepth(8);
+      pedestal.setStrokeStyle(2, 0x9bd46f, 0.7);
+
+      if (!rune || rune.fragments === 0) {
+        this.add
+          .text(x, y - 3, "?", {
+            fontFamily: typography.body,
+            fontSize: `${portrait ? 28 : 38}px`,
+            fontStyle: "bold",
+            color: "#d6e3c5",
+          })
+          .setOrigin(0.5)
+          .setDepth(10)
+          .setAlpha(0.72);
+        this.drawFragmentDots(x, y + height * 0.59, 0, portrait);
+        return;
+      }
+
+      const image = this.fitImage(this.add.image(x, y, mission.reward.assetKey), width, height).setDepth(12);
+      image.setAlpha(rune.stage === "fragment" ? 0.58 : rune.stage === "awakened" ? 0.8 : 1);
+      if (rune.stage === "radiant") {
+        const glow = this.add.ellipse(x, y, width * 0.9, height * 0.8, mission.reward.accent, 0.18).setDepth(11);
+        if (!this.anims.paused) this.tweens.add({ targets: glow, alpha: { from: 0.08, to: 0.32 }, duration: 1200, yoyo: true, repeat: -1 });
+      }
+      image.setInteractive({ useHandCursor: true });
+      image.on("pointerover", () => image.setScale(image.scaleX * 1.06, image.scaleY * 1.06));
+      image.on("pointerout", () => this.fitImage(image, width, height));
+      image.on("pointerup", () => {
+        this.fitImage(image, width, height);
+        const stageLabel = rune.stage === "radiant" ? "radiante" : `${rune.fragments} de 3 fragmentos`;
+        status.setText(`${mission.reward.name} · ${stageLabel}`);
+        this.say(`${mission.reward.name}. ${stageLabel}. Recuerdo de ${mission.area}.`);
+        announce(`${mission.reward.name}. ${stageLabel}.`);
+      });
+      this.drawFragmentDots(x, y + height * 0.59, rune.fragments, portrait);
+    });
+  }
+
+  private drawFragmentDots(x: number, y: number, fragments: number, portrait: boolean): void {
+    const spacing = portrait ? 12 : 17;
+    for (let index = 0; index < 3; index += 1) {
+      const dot = this.add.circle(x + (index - 1) * spacing, y, portrait ? 4 : 5, index < fragments ? palette.sun : 0x264c44, 0.96).setDepth(15);
+      dot.setStrokeStyle(1.5, palette.cream, 0.9);
+    }
+  }
+
+  private createProtectedReset(portrait: boolean): void {
+    let armed = false;
+    let disarmTimer: Phaser.Time.TimerEvent | undefined;
     const reset = this.add
-      .text(this.sceneWidth - 18, portrait ? 198 : 74, "Borrar logros y comenzar de nuevo", {
-        fontFamily: "Trebuchet MS",
+      .text(this.sceneWidth - 18, portrait ? 176 : 28, "Opciones familiares", {
+        fontFamily: typography.body,
         fontSize: `${portrait ? 13 : 15}px`,
         fontStyle: "bold",
         color: "#fff8dc",
-        backgroundColor: "rgba(19,63,56,0.72)",
+        backgroundColor: "rgba(19,63,56,0.78)",
         padding: { x: 12, y: 9 },
       })
       .setOrigin(1, 0)
       .setDepth(30)
       .setInteractive({ useHandCursor: true });
     reset.on("pointerup", () => {
+      if (!armed) {
+        armed = true;
+        reset.setText("Toca otra vez para borrar logros").setBackgroundColor("rgba(122,55,42,0.9)");
+        disarmTimer?.remove();
+        disarmTimer = this.time.delayedCall(4500, () => {
+          armed = false;
+          reset.setText("Opciones familiares").setBackgroundColor("rgba(19,63,56,0.78)");
+        });
+        return;
+      }
       resetProgress();
       this.scene.start("BirthScene");
-    });
-
-    const message = completedCount > 0
-      ? `Tus ${completedCount} piedras forman parte del refugio. La más reciente es la ${selectedMission.reward.name.toLowerCase()}.`
-      : "El refugio está listo para guardar los recuerdos de tus aventuras.";
-    this.time.delayedCall(350, () => this.say(message));
-    announce(message);
-  }
-
-  private drawAchievementGarden(decorationIds: string[], status: Phaser.GameObjects.Text, portrait: boolean): void {
-    const startX = portrait ? 42 : this.sceneWidth * 0.28;
-    const endX = portrait ? this.sceneWidth - 42 : this.sceneWidth * 0.7;
-    const gap = (endX - startX) / (missions.length - 1);
-    const baseY = portrait ? this.sceneHeight * 0.68 : this.sceneHeight * 0.78;
-
-    missions.forEach((mission, index) => {
-      const x = startX + gap * index;
-      const y = baseY + (index % 2 === 0 ? 0 : portrait ? 12 : 18);
-      const moss = this.add.graphics().setDepth(8);
-      moss.fillStyle(0x47784c, 0.86);
-      moss.fillEllipse(x, y + 23, portrait ? 62 : 92, portrait ? 22 : 30);
-      moss.fillStyle(0x76a95b, 0.72);
-      moss.fillEllipse(x - 8, y + 18, portrait ? 36 : 56, portrait ? 14 : 19);
-      if (decorationIds.includes(mission.reward.id)) this.drawRewardStone(x, y, mission, status, portrait);
-    });
-  }
-
-  private drawRewardStone(x: number, y: number, mission: ReadingMission, status: Phaser.GameObjects.Text, portrait: boolean): void {
-    const width = portrait ? 54 : 78;
-    const height = portrait ? 43 : 60;
-    const container = this.add.container(x, y).setDepth(12);
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0x1e342f, 0.35);
-    graphics.fillEllipse(3, 7, width + 5, height + 3);
-    graphics.fillStyle(mission.reward.color, 1);
-    graphics.fillEllipse(0, 0, width, height);
-    graphics.lineStyle(portrait ? 3 : 4, mission.reward.accent, 0.95);
-    graphics.strokeEllipse(0, 0, width, height);
-    graphics.fillStyle(mission.reward.accent, 0.38);
-    graphics.fillEllipse(-width * 0.16, -height * 0.2, width * 0.34, height * 0.2);
-    const symbol = this.add
-      .text(0, 0, mission.reward.symbol, {
-        fontFamily: "Trebuchet MS",
-        fontSize: `${portrait ? 22 : 31}px`,
-        fontStyle: "bold",
-        color: "#173f38",
-      })
-      .setOrigin(0.5);
-    container.add([graphics, symbol]);
-    container.setSize(width + 10, height + 10).setInteractive({ useHandCursor: true });
-    container.on("pointerover", () => container.setScale(1.08));
-    container.on("pointerout", () => container.setScale(1));
-    container.on("pointerup", () => {
-      container.setScale(1);
-      status.setText(`${mission.reward.name} · ${mission.area}`);
-      this.say(`${mission.reward.name}, recuerdo de ${mission.area}.`);
-      announce(`${mission.reward.name}, recuerdo de ${mission.area}.`);
     });
   }
 }

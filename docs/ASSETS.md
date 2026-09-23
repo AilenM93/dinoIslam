@@ -59,10 +59,20 @@ Los recursos marcados como integrados ya forman parte de la experiencia. Los can
 
 - Narración y palabras grabadas, editadas y revisadas en español.
 - Hojas de animación cuadro a cuadro para ampliar caminar y celebrar; el piloto actual usa cambios de pose e interpolaciones.
-- Fondos propios para las zonas futuras del mapa.
+- Ampliar los escenarios cuando se incorporen zonas adicionales al mapa.
 - Ilustraciones de vocabulario validadas y recompensas decorativas ampliables.
 
-## Prompts usados
+## Tipografía local
+
+- Baloo 2, negrita: títulos de escenas y carteles principales; diseño de Ek Type, https://github.com/EkType/Baloo2.
+- Nunito, regular y negrita: instrucciones, palabras de aprendizaje, botones y avisos.
+- Distribución mediante `@fontsource/baloo-2` y `@fontsource/nunito`, subconjunto latino con tildes, eñe y signos españoles. Vite incorpora los archivos al despliegue; no se solicitan fuentes a un servicio externo durante el juego.
+- Ambas familias usan SIL Open Font License 1.1. Las licencias se distribuyen en `public/licenses/` y en los paquetes originales.
+- `src/game/typography.ts` centraliza las familias y espera su carga antes de iniciar Phaser para que el texto del lienzo use la fuente correcta desde el primer dibujo. Si falla la carga, el juego continúa con la fuente de reserva.
+
+## Prompts de ilustraciones
+
+Los cinco fondos de actividades `public/assets/activity-{sounds,letters,syllables,words,stories}-v3.png` están integrados. Cada zona muestra a Minti junto a su compañero en un escenario propio a ras del suelo. Los prompts completos y el origen están en [ACTIVITY_ENVIRONMENTS_V3.md](ACTIVITY_ENVIRONMENTS_V3.md).
 
 Se utilizó la lámina `concept-master.png` como referencia de estilo en las generaciones originales con la herramienta integrada de imágenes:
 

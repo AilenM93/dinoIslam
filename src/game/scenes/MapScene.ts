@@ -1,6 +1,7 @@
 import Phaser from "phaser";
-import { learningPath, missions } from "../content";
-import { getProgress, setCurrentScene, updateProgress } from "../progress";
+import { typography } from "../typography";
+import { learningPath, selectMissionForStage } from "../content";
+import { getProgress, isZoneMastered, setCurrentScene, updateProgress } from "../progress";
 import { announce, isReducedMotion } from "../settings";
 import { BaseScene, palette } from "../ui";
 
@@ -30,20 +31,19 @@ export class MapScene extends BaseScene {
     this.createMapBackground(portrait);
 
     const completedStageIndices = learningPath
-      .map((stage, index) => missions.some((mission) => mission.stageId === stage.id && progress.completedMissionIds.includes(mission.id)) ? index : -1)
+      .map((stage, index) => isZoneMastered(progress, stage.id) ? index : -1)
       .filter((index) => index >= 0);
     const furthestCompleted = completedStageIndices.length > 0 ? Math.max(...completedStageIndices) : -1;
     const unlockedThrough = Math.min(learningPath.length - 1, Math.max(0, furthestCompleted + 1));
     const points = this.zonePoints(portrait);
 
     learningPath.forEach((stage, index) => {
-      const mission = missions.find((item) => item.stageId === stage.id);
-      if (!mission) return;
-      const completed = progress.completedMissionIds.includes(mission.id);
+      const completed = isZoneMastered(progress, stage.id);
       const unlocked = completed || index <= unlockedThrough;
       const point = this.mapPointToScreen(points[index]);
       const scaledRadius = points[index].radius * (this.mapImage?.scaleX ?? 1);
-      this.adventureZone(point.x, point.y, scaledRadius, stage.name, mission.id, completed, unlocked, index);
+      const fragments = progress.runes[stage.id]?.fragments ?? 0;
+      this.adventureZone(point.x, point.y, scaledRadius, stage.name, stage.id, completed, unlocked, fragments, index);
     });
 
     this.createMinti(portrait);
@@ -51,7 +51,7 @@ export class MapScene extends BaseScene {
     this.createBirthControl();
 
     const openCount = unlockedThrough + 1;
-    announce(`Mapa vivo de Dino Island. Hay ${openCount} zonas abiertas y ${progress.completedMissionIds.length} aventuras completadas.`);
+    announce(`Mapa vivo de Dino Island. Hay ${openCount} zonas abiertas y ${completedStageIndices.length} runas radiantes.`);
   }
 
   private createMapBackground(portrait: boolean): void {
@@ -92,9 +92,10 @@ export class MapScene extends BaseScene {
     y: number,
     radius: number,
     label: string,
-    missionId: string,
+    stageId: string,
     completed: boolean,
     unlocked: boolean,
+    fragments: number,
     index: number,
   ): void {
     const ringColor = completed ? palette.mint : palette.sun;
@@ -117,11 +118,13 @@ export class MapScene extends BaseScene {
       this.add.ellipse(x, y, radius * 2.12, radius * 1.56, 0x123d38, 0.42).setDepth(3);
       this.fitImage(this.add.image(x, y, "zone-locked"), radius * 2.45, radius * 2.2).setDepth(4).setAlpha(0.82);
       this.add
-        .text(x, y, "🔒", { fontFamily: "Trebuchet MS", fontSize: `${Math.max(22, radius * 0.42)}px` })
+        .text(x, y, "🔒", { fontFamily: typography.body, fontSize: `${Math.max(22, radius * 0.42)}px` })
         .setOrigin(0.5)
         .setDepth(5)
         .setAlpha(0.86);
     }
+
+    this.createZoneBadge(x, y, radius, label, fragments, unlocked, completed);
 
     const target = this.add.circle(x, y, radius, 0xffffff, 0.001).setDepth(9).setInteractive({ useHandCursor: unlocked });
     target.on("pointerover", () => {
@@ -137,11 +140,48 @@ export class MapScene extends BaseScene {
       this.zoneLabel?.destroy();
       this.zoneLabel = undefined;
       if (unlocked) {
-        this.enterMission(missionId, x, y);
+        this.enterMission(stageId, x, y);
       } else {
         this.showLockedHint(index);
       }
     });
+  }
+
+  private createZoneBadge(
+    x: number,
+    y: number,
+    radius: number,
+    label: string,
+    fragments: number,
+    unlocked: boolean,
+    completed: boolean,
+  ): void {
+    const compact = this.sceneWidth < 520;
+    const shortLabel = label.split(" de ")[0];
+    const labelText = unlocked ? shortLabel : `${shortLabel} · dormida`;
+    const badge = this.add
+      .text(x, y + radius * 0.88, labelText, {
+        fontFamily: typography.body,
+        fontSize: `${compact ? 12 : Math.max(13, radius * 0.16)}px`,
+        fontStyle: "bold",
+        color: unlocked ? "#173f38" : "#fff8dc",
+        backgroundColor: unlocked ? "rgba(255,248,220,0.9)" : "rgba(23,63,56,0.82)",
+        padding: { x: compact ? 7 : 10, y: compact ? 3 : 5 },
+      })
+      .setOrigin(0.5)
+      .setDepth(8);
+    const halfWidth = badge.displayWidth / 2;
+    badge.setX(Phaser.Math.Clamp(x, halfWidth + 6, this.sceneWidth - halfWidth - 6));
+
+    const dotY = y + radius * 0.57;
+    const spacing = compact ? 10 : Math.max(12, radius * 0.17);
+    for (let fragment = 0; fragment < 3; fragment += 1) {
+      const filled = fragment < fragments;
+      const dot = this.add
+        .circle(x + (fragment - 1) * spacing, dotY, compact ? 3.5 : Math.max(4, radius * 0.055), filled ? palette.sun : 0x264c44, unlocked ? 0.96 : 0.42)
+        .setDepth(8);
+      dot.setStrokeStyle(completed ? 2 : 1.5, completed ? palette.mint : palette.cream, 0.9);
+    }
   }
 
   private addCompanion(x: number, y: number, radius: number, index: number): void {
@@ -166,7 +206,7 @@ export class MapScene extends BaseScene {
     this.zoneLabel?.destroy();
     this.zoneLabel = this.add
       .text(x, y, unlocked ? label : `${label} · dormida`, {
-        fontFamily: "Trebuchet MS, Arial Rounded MT Bold, sans-serif",
+        fontFamily: typography.body,
         fontSize: `${this.sceneWidth < 520 ? 15 : 19}px`,
         fontStyle: "bold",
         color: unlocked ? "#173f38" : "#fff8dc",
@@ -221,7 +261,7 @@ export class MapScene extends BaseScene {
     const baseScale = stone.scaleX;
     const symbol = this.add
       .text(x, y, "↺", {
-        fontFamily: "Trebuchet MS",
+        fontFamily: typography.body,
         fontSize: `${compact ? 28 : 34}px`,
         fontStyle: "bold",
         color: "#fff8dc",
@@ -238,9 +278,12 @@ export class MapScene extends BaseScene {
     });
   }
 
-  private enterMission(missionId: string, targetX: number, targetY: number): void {
+  private enterMission(stageId: string, targetX: number, targetY: number): void {
     if (this.transitioning) return;
     this.transitioning = true;
+    const progress = getProgress();
+    const mission = selectMissionForStage(stageId, progress.attemptHistory);
+    const missionId = mission.id;
     updateProgress({ selectedMissionId: missionId });
     setCurrentScene("ReadingScene");
     const openMission = (): void => {
